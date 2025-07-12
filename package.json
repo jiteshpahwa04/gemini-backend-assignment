@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/index.js",
-    "start": "node src/index.js",
+    "dev:server": "nodemon --watch src/index.js --exec \"node src/index.js\"",
+    "dev:worker": "nodemon --watch src/workers/geminiWorker.js --exec \"node src/workers/geminiWorker.js\"",
+    "dev": "concurrently -k -n server,worker -c green,cyan \"npm:dev:server\" \"npm:dev:worker\"",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev"
   },
@@ -21,6 +22,7 @@
   },
   "homepage": "https://github.com/jiteshpahwa04/gemini-backend-assignment#readme",
   "devDependencies": {
+    "concurrently": "^9.2.0",
     "nodemon": "^3.1.10"
   },
   "dependencies": {
