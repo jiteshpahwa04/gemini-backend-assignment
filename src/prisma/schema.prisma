@@ -6,3 +6,72 @@ datasource db {
 generator client {
   provider = "prisma-client-js"
 }
+
+enum Sender {
+  user
+  bot
+}
+
+enum SubscriptionTier {
+  basic
+  pro
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  name          String
+  phone         String         @unique
+  isVerified    Boolean        @default(false)
+  chatrooms     Chatroom[]
+  subscription  Subscription?
+  verifications Verification[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model Verification {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  codeHash  String
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Chatroom {
+  id        Int       @id @default(autoincrement())
+  name      String    @default("Chatroom")
+  user      User      @relation(fields: [userId], references: [id])
+  userId    Int
+  messages  Message[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([userId])
+}
+
+model Message {
+  id         Int      @id @default(autoincrement())
+  chatroom   Chatroom @relation(fields: [chatroomId], references: [id])
+  chatroomId Int
+  sender     Sender
+  content    String
+  createdAt  DateTime @default(now())
+
+  @@index([chatroomId])
+}
+
+model Subscription {
+  id                   Int              @id @default(autoincrement())
+  user                 User             @relation(fields: [userId], references: [id])
+  userId               Int              @unique
+  stripeCustomerId     String
+  stripeSubscriptionId String
+  tier                 SubscriptionTier
+  status               String
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+}

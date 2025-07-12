@@ -1,0 +1,41 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: gemini_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+
+  backend:
+    build: .
+    restart: on-failure
+    depends_on:
+      - postgres
+      - redis
+    env_file: 
+      - .env
+    environment:
+      # override for container networking
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/gemini_db
+      REDIS_URL: redis://redis:6379
+    volumes:
+      - .:/usr/src/app
+      # keep container‐local node_modules
+      - /usr/src/app/node_modules
+    ports:
+      - "3000:3000"
+    command: npm run dev
+
+volumes:
+  pgdata:
