@@ -1,0 +1,37 @@
+{
+  "name": "gemini-backend-assignment",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jiteshpahwa04/gemini-backend-assignment.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jiteshpahwa04/gemini-backend-assignment/issues"
+  },
+  "homepage": "https://github.com/jiteshpahwa04/gemini-backend-assignment#readme",
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  },
+  "dependencies": {
+    "@google/genai": "^1.9.0",
+    "@prisma/client": "^6.11.1",
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.2.0",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "prisma": "^6.11.1",
+    "redis": "^5.6.0",
+    "stripe": "^18.3.0"
+  }
+}
