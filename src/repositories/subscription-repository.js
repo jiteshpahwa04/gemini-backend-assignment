@@ -12,6 +12,45 @@ async function createSubscription({ userId, tier, status, stripeCustomerId = nul
   });
 }
 
+async function upsertSubscription({
+  userId,
+  stripeCustomerId,
+  stripeSubscriptionId,
+  tier,
+  status,
+}) {
+  return prisma.subscription.upsert({
+    where: { userId },
+    update: {
+      stripeCustomerId,
+      stripeSubscriptionId,
+      tier,
+      status,
+    },
+    create: {
+      userId,
+      stripeCustomerId,
+      stripeSubscriptionId,
+      tier,
+      status,
+    },
+  });
+}
+
+async function findSubscriptionByUserId(userId) {
+  return prisma.subscription.findUnique({
+    where: { userId },
+    select: {
+      tier: true,
+      status: true,
+      createdAt: true,
+      updatedAt: true
+    },
+  });
+}
+
 module.exports = {
   createSubscription,
+  upsertSubscription,
+  findSubscriptionByUserId
 };
