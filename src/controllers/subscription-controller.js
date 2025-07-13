@@ -12,12 +12,8 @@ async function subscribeProController(req, res, next) {
 
 async function stripeWebhookController(req, res, next) {
     try {
-        // rawBody is provided by our special middleware (see next step)
         const rawBody = req.body;
         const sigHeader = req.headers['stripe-signature'];
-
-        console.log("raw body: ", rawBody);
-        console.log("sigHeader: ", sigHeader);
 
         const result = await handleStripeWebhook(rawBody, sigHeader);
         res.status(200).json(result);

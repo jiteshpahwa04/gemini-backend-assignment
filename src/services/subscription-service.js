@@ -37,7 +37,7 @@ async function handleStripeWebhook(rawBody, sigHeader) {
             stripeConfig.STRIPE_WEBHOOK_SECRET
         );
     } catch (err) {
-        console.log("got an error");
+        console.log("Got an error while processing the webhook");
         console.error(err);
         throw new BadRequest(`Webhook Error: ${err.message}`);
     }
@@ -46,7 +46,7 @@ async function handleStripeWebhook(rawBody, sigHeader) {
     switch (event.type) {
         case 'checkout.session.completed': {
             const session = event.data.object;
-            // Grab our metadata from checkout session
+            
             const userId = parseInt(session.metadata.userId, 10);
             const stripeCustomerId = session.customer;
             const stripeSubscriptionId = session.subscription;
@@ -59,7 +59,6 @@ async function handleStripeWebhook(rawBody, sigHeader) {
                 tier: 'PRO',
                 status: 'ACTIVE',
             });
-            console.log("tier upgraded");
             break;
         }
 
