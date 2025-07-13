@@ -1,5 +1,5 @@
 const { stripeConfig, serverConfig } = require("../config");
-const { findSubscriptionByUserId } = require("../repositories/subscription-repository");
+const { findSubscriptionByUserId, upsertSubscription } = require("../repositories/subscription-repository");
 const { BadRequest } = require("../utils/error");
 
 const Stripe = require('stripe');
