@@ -29,6 +29,7 @@ async function subscribeProService(userId) {
 async function handleStripeWebhook(rawBody, sigHeader) {
     let event;
 
+    console.log("webhook called!");
     try {
         event = stripe.webhooks.constructEvent(
             rawBody,
@@ -39,6 +40,7 @@ async function handleStripeWebhook(rawBody, sigHeader) {
         throw new BadRequest(`Webhook Error: ${err.message}`);
     }
 
+    console.log("Event is: ", event);
     switch (event.type) {
         case 'checkout.session.completed': {
             const session = event.data.object;
@@ -55,6 +57,7 @@ async function handleStripeWebhook(rawBody, sigHeader) {
                 tier: 'PRO',
                 status: 'ACTIVE',
             });
+            console.log("tier upgraded");
             break;
         }
 
