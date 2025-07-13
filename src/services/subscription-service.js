@@ -10,6 +10,11 @@ async function subscribeProService(userId) {
         throw new BadRequest('Pro Price ID not configured');
     }
 
+    const existingSub = await findSubscriptionByUserId(userId);
+    if (existingSub?.tier === 'PRO' && existingSub.status === 'ACTIVE') {
+        throw new BadRequest('You already have an active Pro subscription');
+    }
+
     const session = await stripe.checkout.sessions.create({
         mode: 'subscription',
         payment_method_types: ['card'],
@@ -46,7 +51,7 @@ async function handleStripeWebhook(rawBody, sigHeader) {
     switch (event.type) {
         case 'checkout.session.completed': {
             const session = event.data.object;
-            
+
             const userId = parseInt(session.metadata.userId, 10);
             const stripeCustomerId = session.customer;
             const stripeSubscriptionId = session.subscription;
