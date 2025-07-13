@@ -37,6 +37,8 @@ async function handleStripeWebhook(rawBody, sigHeader) {
             stripeConfig.STRIPE_WEBHOOK_SECRET
         );
     } catch (err) {
+        console.log("got an error");
+        console.error(err);
         throw new BadRequest(`Webhook Error: ${err.message}`);
     }
 

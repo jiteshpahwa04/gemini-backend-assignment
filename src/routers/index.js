@@ -10,7 +10,4 @@ router.use('/user', userRouter);
 router.use('/chatroom', chatroomRouter);
 router.use('/subscribe', subscriptionRouter);
 
-// Webhook
-router.use('/webhook', webhookRouter);
-
 module.exports = router;
