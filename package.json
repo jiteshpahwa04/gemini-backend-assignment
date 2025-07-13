@@ -7,6 +7,7 @@
     "dev:server": "nodemon --watch src/index.js --exec \"node src/index.js\"",
     "dev:worker": "nodemon --watch src/workers/geminiWorker.js --exec \"node src/workers/geminiWorker.js\"",
     "dev": "concurrently -k -n server,worker -c green,cyan \"npm:dev:server\" \"npm:dev:worker\"",
+    "start": "node src/index.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev"
   },
