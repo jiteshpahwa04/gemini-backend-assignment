@@ -47,13 +47,13 @@ async function getChatroomService(userId, chatroomId) {
 }
 
 async function sendMessageService(userId, chatroomId, content) {
-  // 1️⃣ Validate chatroom ownership
+  // Validate chatroom ownership
   const chatroom = await findChatroomById(chatroomId);
   if (!chatroom || chatroom.userId !== userId) {
     throw new NotFound('Chatroom not found');
   }
 
-  // 2️⃣ Rate-limit for Basic users
+  // Rate-limit for Basic users
   const user = await findUserById(userId);
   if (user.subscription?.tier === 'BASIC') {
     const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
@@ -73,14 +73,14 @@ async function sendMessageService(userId, chatroomId, content) {
     }
   }
 
-  // 3️⃣ Persist the user’s message
+  // Persist the user’s message
   const userMessage = await createMessage({
     chatroomId,
     sender: 'USER',
     content,
   });
 
-  // 4️⃣ Enqueue into Redis Stream with a correlationId
+  // Enqueue into Redis Stream with a correlationId
   const correlationId = uuidv4();
   await redis.xAdd(
     REQUEST_STREAM,
@@ -92,7 +92,7 @@ async function sendMessageService(userId, chatroomId, content) {
     }
   );
 
-  // 5️⃣ Subscribe to the one-off Pub/Sub channel and wait
+  // Subscribe to the one-off Pub/Sub channel and wait
   const responseChannel = `gemini:response:${correlationId}`;
   const subscriber = redis.duplicate();
   await subscriber.connect();
@@ -119,14 +119,14 @@ async function sendMessageService(userId, chatroomId, content) {
     });
   });
 
-  // 6️⃣ Persist the bot’s reply
+  // Persist the bot’s reply
   const botMessage = await createMessage({
     chatroomId,
     sender: 'BOT',
     content: aiText,
   });
 
-  // 7️⃣ Return both messages
+  // Return both messages
   return { userMessage, botMessage };
 }
 

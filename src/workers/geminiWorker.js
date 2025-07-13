@@ -1,4 +1,3 @@
-// src/workers/gemini_worker.js
 require('dotenv').config();
 const { GoogleGenAI } = require('@google/genai');
 const redis = require('../utils/redisClient');
@@ -7,7 +6,7 @@ const REQUEST_STREAM = 'gemini:requests';
 const CONSUMER_GROUP = 'gemini-workers';
 const CONSUMER_NAME = 'worker-1';
 
-// Instantiate the Gemini client (will pick up your env‐provided API key)
+// Instantiate the Gemini client
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY
 });
@@ -24,7 +23,7 @@ function fieldsToObject(fieldsArray) {
 }
 
 async function startWorker() {
-  // 1️⃣ Create the consumer group if it doesn't exist
+  // Create the consumer group if it doesn't exist
   try {
     await redis.xGroupCreate(REQUEST_STREAM, CONSUMER_GROUP, '0', { MKSTREAM: true });
     console.log(`👥 Created consumer group "${CONSUMER_GROUP}" on "${REQUEST_STREAM}"`);
@@ -40,7 +39,7 @@ async function startWorker() {
 
   console.log('🤖 Gemini worker started, waiting for messages...');
 
-  // 2️⃣ Continuously read new entries
+  // Continuously read new entries
   while (true) {
     try {
       const streams = await redis.sendCommand([
@@ -59,7 +58,7 @@ async function startWorker() {
         const { correlationId, content } = msg;
 
         try {
-          // 3️⃣ Call Gemini
+          // Call Gemini
           const res = await ai.models.generateContent({
             model: 'gemini-2.5-flash',
             contents: content,
@@ -67,15 +66,14 @@ async function startWorker() {
 
           const aiText = res.text;
 
-          // 4️⃣ Publish the AI response on the Pub/Sub channel
+          // Publish the AI response on the Pub/Sub channel
           const channel = `gemini:response:${correlationId}`;
           await redis.publish(channel, JSON.stringify({ text: aiText }));
 
-          // 5️⃣ Acknowledge the processed stream entry
+          // Acknowledge the processed stream entry
           await redis.xAck(REQUEST_STREAM, CONSUMER_GROUP, id);
         } catch (apiErr) {
           console.error('Error calling Gemini or publishing response:', apiErr);
-          // Optionally: move to a dead‐letter stream or implement retry logic
         }
       }
     } catch (streamErr) {
